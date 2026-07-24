@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-07-23
+
 ### Added
 - CLI with three commands:
   - `validate` — extract the source schema, deploy it into the Azure SQL Database
@@ -41,4 +43,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--database` is validated as a safe SQL identifier before use in DDL.
 - Secrets are supplied at runtime (flags/env), never stored in the source.
 
-[Unreleased]: https://github.com/MarlonRibunal/azsql-migration-test/commits/main
+[Unreleased]: https://github.com/MarlonRibunal/azsql-migration-test/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/MarlonRibunal/azsql-migration-test/releases/tag/v0.1.0
