@@ -33,8 +33,8 @@ cloud cost.
 
 | Command    | What it does                                                    |
 |------------|----------------------------------------------------------------|
-| `validate` | Full pass: schema comparison + query replay.                   |
-| `compare`  | Schema diff (source vs. container) via `sqlpackage`.           |
+| `validate` | Full pass: deploy the schema (compatibility test) + query replay. |
+| `compare`  | Non-destructive deployment dry-run (`sqlpackage` DeployReport).  |
 | `replay`   | Run a query set against the container; report execution + timing. |
 
 ## Install
@@ -86,10 +86,14 @@ Migration validation completed successfully
 
 Exits non-zero if the schema fails to deploy (incompatible) or any query fails.
 
-### `compare` — schema diff only (non-destructive)
+### `compare` — deployment dry-run (non-destructive)
 
-Extract the source schema and report what would change against the engine,
-without publishing anything.
+Extract the source schema and report the operations `sqlpackage` *would* perform
+to deploy it onto the Azure SQL Database engine — without applying anything.
+Against a fresh (empty) target database this is the full create plan; if the
+target database already has a schema (e.g. from a prior `validate --keep`, or by
+pointing `--database` at an existing one) it's the incremental diff — creates,
+alters, and drops.
 
 ```bash
 azsql-migration-test compare \
@@ -150,6 +154,7 @@ azsql-migration-test replay --queries ./more.sql --database MigrationValidation
 |-----------------|-------------------------|-------------------------------------------|
 | `--source`      | `AZDBDEV_SOURCE`        | Source connection string (schema origin). |
 | `--queries`     | —                       | Path to a `.sql` file to replay.          |
+| `--database`    | `MigrationValidation`   | Target database in the container to deploy into / query. |
 | `--image`       | `AZDBDEV_IMAGE` (required) | Developer container image reference.  |
 | `--port`        | `1433`                  | Host port mapped to the container.        |
 | `--sa-password` | `AZDBDEV_SA_PASSWORD`   | SA password for the local container.      |
@@ -165,12 +170,16 @@ out of your shell history and the process list. If you have already run
 
 ## How it works
 
-1. Log in to the preview registry (if a password is supplied) and pull the image.
+The full `validate` pass runs the loop below; `compare` and `replay` run subsets
+of it (see [How each command works](#how-each-command-works)).
+
+1. Log in to the registry (if a password is supplied) and pull the image.
 2. Start the container locally on `--port`.
-3. Import the source schema via `sqlpackage`.
-4. Compare source vs. container schema; write a diff report.
-5. Replay the query set via `sqlcmd`, capturing pass/fail and timing.
-6. Tear the container down (unless `--keep`).
+3. Extract the source schema with `sqlpackage`.
+4. Report the deployment plan (`sqlpackage` DeployReport) and write the diff report.
+5. Deploy (publish) the schema into the container — the compatibility test.
+6. Replay the query set via `sqlcmd`, capturing pass/fail and timing.
+7. Tear the container down (unless `--keep`).
 
 **On timing:** replay timing is reported for information only. A local container
 is not a cloud service tier, so local timing is not a cloud performance signal.
@@ -205,17 +214,20 @@ privately. The container port is bound to `127.0.0.1` only.
 `sqlcmd` is invoked *inside* the container via `docker exec`, so you do not need
 it on the host.
 
-## How validation works
+## How each command works
 
 - `compare` — extract the source schema to a dacpac, then run a non-destructive
   `sqlpackage DeployReport` against the container's target database. Reports the
-  change count and flags breaking operations (drops, data-loss alerts).
-- `validate` — the above, then **publish** the schema into the container. The
-  publish is the real compatibility test: if the schema uses a construct the
-  Azure SQL Database engine rejects, the publish fails and validation fails.
-  Then replays the queries against the deployed schema.
+  change count and flags breaking operations (drops, data-loss alerts). Nothing is
+  applied. Against a fresh target this is the full create plan; against a
+  pre-populated target it's the incremental diff.
+- `validate` — extract, DeployReport, then **publish** the schema into the
+  container. The publish is the real compatibility test: if the schema uses a
+  construct the Azure SQL Database engine rejects, the publish fails and validation
+  fails. Then replays the queries against the deployed schema.
 - `replay` — run a query set against `--database` via `sqlcmd`, per-batch
-  pass/fail and timing.
+  pass/fail and timing. Does not touch the schema; run it against a database you
+  have already deployed (e.g. after `validate --keep`).
 
 ## Status
 
