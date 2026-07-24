@@ -1,0 +1,47 @@
+# CI covers compile-time and pure-logic checks only: gofmt, vet, build, unit
+# tests, and cross-platform build. It does NOT exercise the container or
+# sqlpackage integration (compare/validate/replay against a live engine) —
+# that needs Docker plus Azure SQL Database Developer private-preview access,
+# which CI intentionally does not have. "build passing" != "migrations validated".
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: gofmt / vet / build / test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: false # no go.sum: zero third-party dependencies, nothing to cache
+
+      - name: gofmt
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "These files are not gofmt-clean:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: build
+        run: go build ./...
+
+      - name: test
+        run: go test ./...
+
+      - name: cross-compile release targets
+        run: make release

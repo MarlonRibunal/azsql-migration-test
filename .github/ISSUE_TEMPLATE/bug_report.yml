@@ -1,0 +1,58 @@
+name: Bug report
+description: Report a problem with azsql-migration-test
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. Please redact any passwords (registry,
+        connection string, SA) before pasting command output below.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `azsql-migration-test version`.
+      placeholder: v0.1.0 (or a commit SHA)
+    validations:
+      required: true
+  - type: dropdown
+    id: command
+    attributes:
+      label: Command
+      options:
+        - validate
+        - compare
+        - replay
+        - other / not command-specific
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: >
+        What did you expect, and what happened instead? Include the exact
+        command you ran and the full output (passwords redacted).
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      value: |
+        - OS / arch:
+        - Docker version:
+        - sqlpackage version:
+        - Developer preview access (yes/no):
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: I did not paste any secrets (passwords, connection strings) into this report.
+          required: true

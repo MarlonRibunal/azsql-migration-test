@@ -1,0 +1,10 @@
+/bin/
+/dist/
+# Report artifacts can contain source DDL / object names — ignore them anywhere,
+# not just the default ./migration-report/ location.
+migration-report/
+schema-diff.xml
+report.md
+*.dacpac
+*.out
+.DS_Store

@@ -1,0 +1,24 @@
+azsql-migration-test
+Copyright (c) 2026 Marlon Ribunal
+
+This project's own source code is licensed under the MIT License (see LICENSE).
+
+Trademarks and affiliation
+--------------------------
+This is an independent, community project. It is NOT affiliated with, endorsed
+by, or sponsored by Microsoft Corporation. "Azure", "Azure SQL Database", "SQL
+Server", and "az" are trademarks of Microsoft Corporation. They are used here
+only descriptively, to identify the software this tool interoperates with.
+
+Third-party software
+--------------------
+This tool orchestrates, but does not include or redistribute, third-party
+software that is governed by its own separate terms, not by this project's MIT
+License:
+
+- The Azure SQL Database Developer container image and engine — Microsoft
+  proprietary software, subject to Microsoft's license/EULA and (while in
+  private preview) the applicable preview agreement. You are responsible for
+  having the rights to use it and for accepting its EULA.
+- `sqlpackage` and `sqlcmd` — Microsoft tools, subject to their own licenses.
+- Docker — subject to its own license.

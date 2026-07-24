@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DeploymentReport xmlns="http://schemas.microsoft.com/sqlserver/dac/DeployReport/2012/02">
+  <Alerts>
+    <Alert Name="DataIssue">
+      <Issue Value="Data loss may occur when dropping [dbo].[OldTable]." />
+    </Alert>
+  </Alerts>
+  <Operations>
+    <Operation Name="Drop">
+      <Item Value="[dbo].[OldTable]" Type="SqlTable" />
+    </Operation>
+    <Operation Name="Create">
+      <Item Value="[dbo].[NewTable]" Type="SqlTable" />
+    </Operation>
+  </Operations>
+</DeploymentReport>

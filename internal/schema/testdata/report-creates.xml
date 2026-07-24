@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DeploymentReport xmlns="http://schemas.microsoft.com/sqlserver/dac/DeployReport/2012/02">
+  <Alerts />
+  <Operations>
+    <Operation Name="Create">
+      <Item Value="[dbo].[Customers]" Type="SqlTable" />
+      <Item Value="[dbo].[Orders]" Type="SqlTable" />
+      <Item Value="unnamed constraint on [dbo].[Orders]" Type="SqlDefaultConstraint" />
+      <Item Value="unnamed constraint on [dbo].[Orders]" Type="SqlForeignKeyConstraint" />
+    </Operation>
+  </Operations>
+</DeploymentReport>
